@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ONETouch - Ride Booking</title>
+  <meta name="description" content="Book rides instantly with ONETouch's unified urban services platform">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" as="style" onload="this.rel='stylesheet'">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  </noscript>
+  
+  <style>
+    /* Universal box-sizing for consistent layout */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-color: #7a5cf4;
+      --primary-hover: #6a4ce0;
+      --error-color: #ff4d4d;
+      --success-color: #4CAF50;
+      --warning-color: #FFA500;
+      --text-light: #ffffff;
+      --text-dark: #1a1a1a;
+      --bg-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      --bg-dark: linear-gradient(135deg, #1a1a1a, #2c2c2c, #3a3a3a);
+      --card-bg: rgba(255, 255, 255, 0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    /* Base Styles */
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-light);
+      min-height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+      transition: var(--transition);
+      line-height: 1.6;
+    }
+    /* Accessibility Modes */
+    body.dark-mode {
+      background: var(--bg-dark);
+      color: #e0e0e0;
+    }
+
+    body.high-contrast {
+      background: #000;
+      color: #fff;
+    }
+    
+    body.high-contrast * {
+      border-color: #fff !important;
+    }
+
+    body.high-contrast .ride-card,
+    body.high-contrast .favorites-section,
+    body.high-contrast .booking-form,
+    body.high-contrast .custom-popup-content,
+    body.high-contrast .nav-drawer,
+    body.high-contrast .footer {
+      background: #333;
+      border: 2px solid #fff;
+    }
+
+    /* Layout */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 15px;
+      flex-grow: 1;
+    }
+
+    /* Header - Sticky Navigation */
+     header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      position: sticky;
+      top: 0;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+    }
+
+
+    .logo {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text-light);
+      text-decoration: none;
+    }
+
+    /* Navigation */
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .hamburger:hover, 
+    .hamburger:focus {
+      color: var(--primary-color);
+      outline: 2px solid var(--primary-color);
+      background: rgba(122, 92, 244, 0.1);
+    }
+
+    nav {
+      display: flex;
+      gap: 20px;
+    }
+
+    nav a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 16px;
+      transition: var(--transition);
+      padding: 8px 12px;
+      border-radius: 5px;
+    }
+
+    nav a:hover, 
+    nav a:focus {
+      color: var(--primary-color);
+      outline: 2px solid var(--primary-color);
+      background: rgba(122, 92, 244, 0.1);
+    }
+
+    /* Active Navigation Link Highlighting */
+    nav a.active-link {
+      color: var(--primary-color);
+      border-bottom: 2px solid var(--primary-color);
+      font-weight: 600;
+    }
+
+    /* Mode Toggles */
+    .mode-toggles {
+      display: flex;
+      gap: 10px;
+    }
+
+    .mode-toggle {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 20px;
+      cursor: pointer;
+      transition: var(--transition);
+      padding: 8px;
+      border-radius: 5px;
+    }
+
+    .mode-toggle:hover, 
+    .mode-toggle:focus {
+      color: var(--primary-color);
+      outline: 2px solid var(--primary-color);
+      background: rgba(122, 92, 244, 0.1);
+    }
+
+    /* Mobile Navigation Drawer */
+    .nav-drawer {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      transition: left 0.3s ease;
+      z-index: 200;
+    }
+
+    .nav-drawer.active {
+      left: 0;
+    }
+
+    .nav-drawer a, 
+    .nav-drawer button {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 18px;
+      padding: 12px;
+      border-radius: 5px;
+      transition: var(--transition);
+      text-align: left;
+      background: none;
+      border: none;
+    }
+
+    .nav-drawer a:hover, 
+    .nav-drawer a:focus,
+    .nav-drawer button:hover, 
+    .nav-drawer button:focus {
+      background: rgba(122, 92, 244, 0.2);
+      outline: 2px solid var(--primary-color);
+    }
+
+    .nav-drawer .close-btn {
+      align-self: flex-end;
+      font-size: 24px;
+      background: none;
+      border: none;
+      color: var(--text-light);
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    /* Booking Form - Grid Layout for improved alignment */
+    .booking-form {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 25px;
+      margin: 30px 0;
+      backdrop-filter: blur(10px);
+    }
+
+    .booking-form h2 {
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+
+    .booking-form form {
+      display: grid; /* Changed to Grid */
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Flexible columns, min 200px */
+      gap: 15px;
+      align-items: end; /* Align items to the bottom, useful for labels/inputs */
+    }
+
+    .form-group {
+      /* No flex properties needed here if using grid on parent */
+      width: 100%; /* Ensure it takes full grid cell width */
+    }
+
+    .booking-form label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .booking-form input,
+    .booking-form select {
+      width: 100%;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      color: var(--text-light);
+      font-size: 16px;
+      transition: var(--transition);
+    }
+
+    .booking-form input:focus,
+    .booking-form select:focus {
+      outline: 2px solid var(--primary-color);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .booking-form input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .booking-form button {
+      background-color: var(--primary-color);
+      color: var(--text-light);
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 600;
+      /* Removed align-self: flex-end; as it's now a grid item */
+      grid-column: span 1; /* Make button take 1 column in the grid */
+      height: 100%; /* Make button fill its grid cell height */
+      min-height: 48px; /* Ensure a minimum height for the button */
+      display: flex; /* Use flex to center content inside button if needed */
+      align-items: center;
+      justify-content: center;
+    }
+
+    .booking-form button:hover, 
+    .booking-form button:focus {
+      background-color: var(--primary-hover);
+      outline: 2px solid var(--primary-color);
+      transform: translateY(-2px);
+    }
+
+    .booking-form button:disabled {
+      background-color: #555;
+      cursor: not-allowed;
+    }
+
+    /* Search and Filter */
+    .search-filter {
+      display: flex;
+      gap: 15px;
+      margin: 25px 0;
+      flex-wrap: wrap;
+    }
+
+    .search-filter input,
+    .search-filter select {
+      flex: 1;
+      min-width: 200px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      color: var(--text-light);
+      font-size: 16px;
+      transition: var(--transition);
+    }
+
+    .search-filter input:focus,
+    .search-filter select:focus {
+      outline: 2px solid var(--primary-color);
+      background: black;
+    }
+
+    .search-filter input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Ride Grid */
+    .ride-grid, 
+    .favorites-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      padding: 20px 0;
+    }
+
+    .ride-card, 
+    .favorite-route {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 25px;
+      cursor: pointer;
+      transition: var(--transition);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .ride-card:hover, 
+    .ride-card:focus,
+    .favorite-route:hover, 
+    .favorite-route:focus {
+      transform: translateY(-10px);
+      outline: 2px solid var(--primary-color);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .ride-card h3, 
+    .favorite-route h3 {
+      font-size: 20px;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .ride-card p, 
+    .favorite-route p {
+      font-size: 14px;
+      opacity: 0.9;
+      margin: 8px 0;
+    }
+
+    .ride-card .price {
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .card-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    /* Favorites */
+    .favorite-btn {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 20px;
+      cursor: pointer;
+      transition: var(--transition);
+      padding: 5px;
+    }
+
+    .favorite-btn.favorited {
+      color: var(--error-color);
+    }
+
+    .favorite-btn:hover, 
+    .favorite-btn:focus {
+      color: var(--error-color);
+      outline: 2px solid var(--error-color);
+      transform: scale(1.1);
+    }
+
+    .favorites-section {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin: 30px 0;
+      display: none;
+    }
+
+    .favorites-section.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    /* Buttons */
+    .btn {
+      background-color: var(--primary-color);
+      color: var(--text-light);
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 600;
+    }
+
+    .btn:hover, 
+    .btn:focus {
+      background-color: var(--primary-hover);
+      outline: 2px solid var(--primary-color);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-secondary:hover,
+    .btn-secondary:focus {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Popup */
+    .custom-popup-overlay {
+      display: flex;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .custom-popup-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .custom-popup-content {
+      background: #2c5364;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      position: relative;
+      transform: translateY(-20px);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .custom-popup-overlay.show .custom-popup-content {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .custom-popup-close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 28px;
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      transition: var(--transition);
+      background: none;
+      border: none;
+      padding: 5px;
+    }
+
+    .custom-popup-close-btn:hover, 
+    .custom-popup-close-btn:focus {
+      color: var(--text-light);
+      outline: 2px solid var(--primary-color);
+    }
+
+    /* Loading Spinner */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: var(--primary-color);
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(0, 0, 0, 0.3); /* Slightly darker, semi-transparent */
+      backdrop-filter: blur(5px);
+      padding: 40px 20px;
+      color: rgba(255, 255, 255, 0.7);
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: auto; /* Pushes footer to the bottom */
+    }
+
+    footer .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 30px;
+    }
+
+    .footer-section {
+      flex: 1 1 250px; /* Allows sections to grow/shrink, min-width 250px */
+      margin-bottom: 20px;
+    }
+
+    .footer-section h4 {
+      font-size: 1.2rem;
+      color: var(--text-light);
+      margin-bottom: 15px;
+      position: relative;
+      padding-bottom: 5px;
+    }
+
+    .footer-section h4::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 40px;
+      height: 2px;
+      background-color: var(--primary-color);
+    }
+
+    .footer-section p, .footer-section ul {
+      font-size: 0.95rem;
+      line-height: 1.8;
+    }
+
+    .footer-section ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .footer-section ul li {
+      margin-bottom: 10px;
+    }
+
+    .footer-section ul li a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+
+    .footer-section ul li a:hover {
+      color: var(--primary-color);
+      text-decoration: underline;
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+      justify-content: center; /* Center social icons within their section */
+    }
+
+    .social-icons a {
+      color: var(--text-light);
+      font-size: 1.5rem;
+      transition: color var(--transition), transform var(--transition);
+    }
+
+    .social-icons a:hover {
+      color: var(--primary-color);
+      transform: translateY(-3px);
+    }
+
+    .footer-bottom {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .hamburger { display: block; }
+      nav, .mode-toggles { display: none; }
+      
+      .ride-grid, 
+      .favorites-grid { 
+        grid-template-columns: 1fr; 
+      }
+      
+      /* Booking form now stacks on smaller screens */
+      .booking-form form { 
+        grid-template-columns: 1fr; 
+      }
+      
+      .booking-form input, 
+      .booking-form select, 
+      .search-filter input, 
+      .search-filter select { 
+        min-width: 100%; 
+      }
+      
+      header {
+        padding: 15px 0;
+      }
+      
+      .favorites-section {
+        padding: 20px;
+      }
+
+      .footer-content {
+        flex-direction: column; /* Stack footer sections vertically */
+        align-items: center;
+      }
+
+      .footer-section h4::after {
+        left: 50%;
+        transform: translateX(-50%);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .ride-card, 
+      .favorite-route { 
+        padding: 20px; 
+      }
+      
+      .card-actions {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .btn {
+        width: 100%;
+      }
+      
+      .booking-form {
+        padding: 20px;
+      }
+      .footer-links {
+        flex-direction: column;
+        gap: 5px;
+      }
+      .footer-links a {
+        margin: 5px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="index.html" class="logo">ONETouch</a>
+      <button class="hamburger" aria-label="Toggle navigation menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <nav aria-label="Main navigation">
+        <a href="food-delivery.html">Food Delivery</a>
+        <a href="ride-booking.html">Ride Booking</a>
+        <a href="medical-services.html">Medical Services</a>
+        <a href="shopping.html">Shopping</a>
+        <a href="cart.html">Cart</a>
+        <a href="auth.html">Account</a>
+      </nav>
+    </header>
+
+    <div class="nav-drawer">
+      <button class="close-btn" aria-label="Close navigation menu">
+        <i class="fas fa-times"></i>
+      </button>
+      <a href="index.html" aria-label="Go to Home" onclick="closeNav()">Home</a>
+      <a href="food-delivery.html" aria-label="Go to Food Delivery" onclick="closeNav()">Food Delivery</a>
+      <a href="#" aria-label="Current page: Ride Booking" onclick="closeNav()">Ride Booking</a>
+      <a href="medical-services.html" aria-label="Go to Medical Services" onclick="navigateTo('medical-services'); closeNav()">Medical Services</a>
+      <a href="profile.html" aria-label="Go to Profile" onclick="navigateTo('profile'); closeNav()">Profile</a>
+      <button class="mode-toggle" aria-label="Toggle dark mode" onclick="toggleDarkMode(); closeNav()">
+        Dark Mode <i class="fas fa-moon"></i>
+      </button>
+      <button class="mode-toggle" aria-label="Toggle high contrast mode" onclick="toggleHighContrast(); closeNav()">
+        High Contrast <i class="fas fa-adjust"></i>
+      </button>
+      <button class="mode-toggle" aria-label="Toggle debug panel" onclick="toggleDebugPanel(); closeNav()">
+        Debug Logs <i class="fas fa-bug"></i>
+      </button>
+    </div>
+
+    <main>
+      <section class="booking-form">
+        <h2>Book a Ride</h2>
+        <form id="rideForm" onsubmit="searchRides(event)">
+          <div class="form-group">
+            <label for="pickup">Pickup Location</label>
+            <input type="text" id="pickup" placeholder="Enter pickup location" aria-label="Enter pickup location" required>
+          </div>
+          <div class="form-group">
+            <label for="dropoff">Drop-off Location</label>
+            <input type="text" id="dropoff" placeholder="Enter drop-off location" aria-label="Enter drop-off location" required>
+          </div>
+          <div class="form-group">
+            <label for="date">Date</label>
+            <input type="date" id="date" aria-label="Select travel date" required>
+          </div>
+          <div class="form-group">
+            <label for="time">Time</label>
+            <input type="time" id="time" aria-label="Select travel time" required>
+          </div>
+          <button type="submit" aria-label="Search rides" id="searchButton">
+            <span id="searchButtonText">Search Rides</span>
+          </button>
+        </form>
+      </section>
+
+      <section class="search-filter">
+        <input type="text" id="searchInput" placeholder="Search rides by location..." aria-label="Search rides by location" oninput="filterRides()">
+        <select id="vehicleFilter" aria-label="Filter by vehicle type" onchange="filterRides()">
+          <option value="">All Vehicles</option>
+          <option value="Sedan">Sedan</option>
+          <option value="SUV">SUV</option>
+          <option value="Luxury">Luxury</option>
+          <option value="XL">XL (6+ passengers)</option>
+        </select>
+        <select id="sortFilter" aria-label="Sort rides" onchange="filterRides()">
+          <option value="">Sort By</option>
+          <option value="price">Price (Low to High)</option>
+          <option value="price-desc">Price (High to Low)</option>
+          <option value="eta">ETA (Fastest)</option>
+          <option value="rating">Rating</option>
+        </select>
+      </section>
+
+      <section id="favoritesSection" class="favorites-section">
+        <h2>Favorite Routes</h2>
+        <div id="favoritesGrid" class="favorites-grid"></div>
+      </section>
+
+      <section class="ride-grid" id="rideGrid">
+        </section>
+    </main>
+
+    <div id="customPopup" class="custom-popup-overlay">
+      <div class="custom-popup-content">
+        <button class="custom-popup-close-btn" aria-label="Close popup">&times;</button>
+        <p id="customPopupMessage"></p>
+        <div id="popupActions" style="margin-top: 20px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>About ONETouch</h4>
+        <p>Your ultimate platform for seamless urban services, simplifying your daily life with just one touch.</p>
+      </div>
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="food-delivery.html" onclick="logAction('Clicked footer Food Delivery link')">Food Delivery</a></li>
+          <li><a href="ride-booking.html" onclick="logAction('Clicked footer Ride Booking link')">Ride Booking</a></li>
+          <li><a href="medical-services.html" onclick="logAction('Clicked footer Medical Services link')">Medical Services</a></li>
+          <li><a href="profile.html" onclick="logAction('Clicked footer Profile link')">My Profile</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Connect With Us</h4>
+        <div class="social-icons">
+          <a href="#" aria-label="Facebook" onclick="logAction('Clicked Facebook icon')"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Twitter" onclick="logAction('Clicked Twitter icon')"><i class="fab fa-twitter"></i></a>
+          <a href="#" aria-label="Instagram" onclick="logAction('Clicked Instagram icon')"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="LinkedIn" onclick="logAction('Clicked LinkedIn icon')"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2025 ONETouch. All rights reserved.
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  
+  <script>
+    // DOM Elements
+    const customPopup = document.getElementById('customPopup');
+    const customPopupMessage = document.getElementById('customPopupMessage');
+    const popupActions = document.getElementById('popupActions');
+    const rideGrid = document.getElementById('rideGrid');
+    const searchButton = document.getElementById('searchButton');
+    const searchButtonText = document.getElementById('searchButtonText');
+    
+    // State Management
+    let state = {
+      isLoading: false,
+      rides: [],
+      favorites: JSON.parse(localStorage.getItem('rideFavorites')) || [],
+      actionLogs: JSON.parse(localStorage.getItem('actionLogs')) || [],
+      userLocation: null
+    };
+
+    // Event Listeners
+    function initEventListeners() {
+      // Delegated event listener for favorite button
+      rideGrid.addEventListener('click', (e) => {
+        if (e.target.classList.contains('favorite-btn')) {
+          const rideId = e.target.closest('.ride-card') ? e.target.closest('.ride-card').dataset.id : e.target.closest('.favorite-route').dataset.id;
+          const ride = state.rides.find(r => r.id === rideId);
+          if (ride) {
+            toggleFavorite(ride);
+          }
+        }
+      });
+    }
+    
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Set default date and time
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      document.getElementById('date').valueAsDate = tomorrow;
+      document.getElementById('time').value = '12:00';
+      
+      // Load sample rides
+      await loadSampleRides();
+      
+      // Initialize UI components
+      initNavigation();
+      initPopup();
+      initEventListeners(); 
+      
+      // Update UI
+      updateFavorites();
+      filterRides();
+      
+      // Get user location if available
+      getUserLocation();
+      
+      // Animate ride cards
+      animateRideCards();
+
+      // Check for saved mode preferences
+      checkSavedModes();
+    });
+    
+    // Navigation Functions (Copied from index.html and adapted)
+    function initNavigation() {
+      const hamburger = document.querySelector('.hamburger');
+      const navDrawer = document.querySelector('.nav-drawer');
+      const closeBtn = document.querySelector('.nav-drawer .close-btn');
+      
+      hamburger.addEventListener('click', openNav);
+      closeBtn.addEventListener('click', closeNav);
+      
+      // Close nav when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!navDrawer.contains(e.target) && e.target !== hamburger) {
+          closeNav();
+        }
+      });
+
+      // Set active link on load
+      const currentPage = window.location.pathname.split('/').pop() || 'index.html'; // Default to index.html if root
+      document.querySelectorAll('nav a').forEach(link => {
+        if (link.getAttribute('href').includes(currentPage)) {
+          link.classList.add('active-link');
+        }
+      });
+    }
+    
+    function openNav() {
+      const navDrawer = document.querySelector('.nav-drawer');
+      navDrawer.classList.add('active');
+      gsap.to(navDrawer, { x: 0, duration: 0.3, ease: 'power2.out' });
+      logAction('Opened navigation menu');
+    }
+    
+    function closeNav() {
+      const navDrawer = document.querySelector('.nav-drawer');
+      gsap.to(navDrawer, { 
+        x: -250, 
+        duration: 0.3, 
+        ease: 'power2.in', 
+        onComplete: () => navDrawer.classList.remove('active')
+      });
+      logAction('Closed navigation menu');
+    }
+    
+    // Mode Toggles (Copied from index.html)
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      const icons = document.querySelectorAll('.mode-toggle .fa-moon, .mode-toggle .fa-sun');
+      icons.forEach(icon => {
+        icon.className = document.body.classList.contains('dark-mode') ? 'fas fa-sun' : 'fas fa-moon';
+      });
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+      logAction('Toggled dark mode');
+    }
+    
+    function toggleHighContrast() {
+      document.body.classList.toggle('high-contrast');
+      const icons = document.querySelectorAll('.mode-toggle .fa-adjust, .mode-toggle .fa-circle-half-stroke');
+      icons.forEach(icon => {
+        icon.className = document.body.classList.contains('high-contrast') ? 'fas fa-circle-half-stroke' : 'fas fa-adjust';
+      });
+      localStorage.setItem('highContrast', document.body.classList.contains('high-contrast'));
+      logAction('Toggled high contrast mode');
+    }
+
+    function toggleDebugPanel() {
+      // This function is for consistency; debug panel UI is not present on this page.
+      // No console.log here to avoid unnecessary messages.
+    }
+    
+    function checkSavedModes() {
+      if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        // Update icon if it exists in the header
+        const moonIcon = document.querySelector('header .mode-toggle .fa-moon');
+        if (moonIcon) moonIcon.className = 'fas fa-sun';
+        // Update icon in nav drawer if it exists
+        const navDrawerMoonIcon = document.querySelector('.nav-drawer .mode-toggle .fa-moon');
+        if (navDrawerMoonIcon) navDrawerMoonIcon.className = 'fas fa-sun';
+      }
+      
+      if (localStorage.getItem('highContrast') === 'true') {
+        document.body.classList.add('high-contrast');
+        // Update icon if it exists in the header
+        const adjustIcon = document.querySelector('header .mode-toggle .fa-adjust');
+        if (adjustIcon) adjustIcon.className = 'fas fa-circle-half-stroke';
+        // Update icon in nav drawer if it exists
+        const navDrawerAdjustIcon = document.querySelector('.nav-drawer .mode-toggle .fa-adjust');
+        if (navDrawerAdjustIcon) navDrawerAdjustIcon.className = 'fas fa-circle-half-stroke';
+      }
+    }
+    
+    // Ride Booking Functions
+    async function searchRides(event) {
+      event.preventDefault();
+      
+      const pickup = document.getElementById('pickup').value.trim();
+      const dropoff = document.getElementById('dropoff').value.trim();
+      const date = document.getElementById('date').value;
+      const time = document.getElementById('time').value;
+      
+      if (!pickup || !dropoff) {
+        showCustomPopup('Please enter both pickup and drop-off locations', 'error');
+        return;
+      }
+      
+      try {
+        setLoading(true);
+        logAction(`Searching rides: ${pickup} to ${dropoff}, ${date}, ${time}`);
+        
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        // Filter rides based on search
+        const filteredRides = state.rides.filter(ride => 
+          ride.route.toLowerCase().includes(pickup.toLowerCase()) || 
+          ride.route.toLowerCase().includes(dropoff.toLowerCase())
+        );
+        
+        if (filteredRides.length === 0) {
+          showCustomPopup('No rides available for this route. Try different locations.', 'info');
+        } else {
+          renderRides(filteredRides);
+          showCustomPopup(`Found ${filteredRides.length} rides for your route!`, 'success');
+        }
+      } catch (error) {
+        console.error('Search error:', error);
+        showCustomPopup('Failed to search rides. Please try again.', 'error');
+        logAction(`Search error: ${error.message}`);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    function bookRide(ride) {
+      showCustomPopup(
+        `Confirm booking: ${ride.type} for ${ride.route} at ₹${ride.price}?`, 
+        'confirm', 
+        [
+          {
+            text: 'Cancel',
+            action: () => hideCustomPopup(),
+            class: 'btn-secondary'
+          },
+          {
+            text: 'Confirm',
+            action: async () => {
+              try {
+                setLoading(true);
+                logAction(`Booking ride: ${ride.type} for ${ride.route} at ₹${ride.price}`);
+                
+                // Simulate payment processing
+                const paymentResult = await simulatePayment(ride.price);
+                
+                if (paymentResult.success) {
+                  showCustomPopup(
+                    `Success! Your ${ride.type} is booked for ${ride.route}. Payment ID: ${paymentResult.paymentId}`,
+                    'success'
+                  );
+                  logAction(`Ride booked successfully. Payment ID: ${paymentResult.paymentId}`);
+                } else {
+                  throw new Error('Payment failed');
+                }
+              } catch (error) {
+                console.error('Booking error:', error);
+                showCustomPopup('Booking failed. Please try again.', 'error');
+                logAction(`Booking error: ${error.message}`);
+              } finally {
+                setLoading(false);
+              }
+            },
+            class: 'btn'
+          }
+        ]
+      );
+    }
+    
+    async function simulatePayment(amount) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          const paymentId = `pay_${Math.random().toString(36).substr(2, 9)}`;
+          resolve({ success: true, paymentId });
+        }, 2000);
+      });
+    }
+    
+    // Favorites Management
+    function toggleFavorite(ride) {
+      const index = state.favorites.findIndex(fav => 
+        fav.id === ride.id
+      );
+      
+      if (index === -1) {
+        state.favorites.push(ride);
+        showCustomPopup(`${ride.type} (${ride.route}) added to favorites!`, 'success');
+        logAction(`Added ${ride.type} (${ride.route}) to favorites`);
+      } else {
+        state.favorites.splice(index, 1);
+        showCustomPopup(`${ride.type} (${ride.route}) removed from favorites!`, 'info');
+        logAction(`Removed ${ride.type} (${ride.route}) from favorites`);
+      }
+      
+      localStorage.setItem('rideFavorites', JSON.stringify(state.favorites));
+      updateFavorites();
+      updateFavoriteButtons();
+    }
+    
+    function updateFavorites() {
+      const favoritesSection = document.getElementById('favoritesSection');
+      const favoritesGrid = document.getElementById('favoritesGrid');
+      favoritesGrid.innerHTML = '';
+      
+      if (state.favorites.length > 0) {
+        favoritesSection.classList.add('active');
+        
+        state.favorites.forEach(ride => {
+          const card = document.createElement('div');
+          card.className = 'favorite-route';
+          card.innerHTML = `
+            <h3>${ride.type}</h3>
+            <p>Route: ${ride.route}</p>
+            <p class="price">Price: ₹${ride.price} • ETA: ${ride.eta} min</p>
+            <div class="card-actions">
+              <button class="favorite-btn favorited" onclick="toggleFavorite(${JSON.stringify(ride).replace(/"/g, '&quot;')})" aria-label="Remove ${ride.route} from favorites">
+                <i class="fas fa-heart"></i>
+              </button>
+              <button class="btn" onclick="bookRide(${JSON.stringify(ride).replace(/"/g, '&quot;')})" aria-label="Book ${ride.type} for ${ride.route}">
+                Book Now
+              </button>
+            </div>
+          `;
+          favoritesGrid.appendChild(card);
+        });
+      } else {
+        favoritesSection.classList.remove('active');
+      }
+    }
+    
+    function updateFavoriteButtons() {
+      document.querySelectorAll('.ride-card').forEach(card => {
+        const rideId = card.dataset.id;
+        const favoriteBtn = card.querySelector('.favorite-btn');
+        
+        if (state.favorites.some(fav => fav.id === rideId)) {
+          favoriteBtn.classList.add('favorited');
+        } else {
+          favoriteBtn.classList.remove('favorited');
+        }
+      });
+    }
+    
+    // Ride Data and Filtering
+    async function loadSampleRides() {
+      // Sample ride data
+      state.rides = [
+        {
+          id: 'ride1',
+          type: 'Economy Sedan',
+          vehicle: 'Sedan',
+          price: 20,
+          eta: 15,
+          route: 'Downtown to Airport',
+          rating: 4.5
+        },
+        {
+          id: 'ride2',
+          type: 'Premium SUV',
+          vehicle: 'SUV',
+          price: 30,
+          eta: 12,
+          route: 'Downtown to Airport',
+          rating: 4.8
+        },
+        {
+          id: 'ride3',
+          type: 'Luxury Vehicle',
+          vehicle: 'Luxury',
+          price: 45,
+          eta: 10,
+          route: 'Downtown to Airport',
+          rating: 4.9
+        },
+        {
+          id: 'ride4',
+          type: 'XL Van',
+          vehicle: 'XL',
+          price: 35,
+          eta: 18,
+          route: 'Downtown to Beach',
+          rating: 4.3
+        },
+        {
+          id: 'ride5',
+          type: 'Economy Sedan',
+          vehicle: 'Sedan',
+          price: 15,
+          eta: 20,
+          route: 'University to Mall',
+          rating: 4.2
+        },
+        {
+          id: 'ride6',
+          type: 'Premium SUV',
+          vehicle: 'SUV',
+          price: 25,
+          eta: 15,
+          route: 'University to Mall',
+          rating: 4.6
+        }
+      ];
+      
+      renderRides(state.rides);
+    }
+    
+    function renderRides(rides) {
+      rideGrid.innerHTML = '';
+      
+      rides.forEach(ride => {
+        const card = document.createElement('div');
+        card.className = 'ride-card';
+        card.dataset.id = ride.id;
+        card.dataset.vehicle = ride.vehicle;
+        card.dataset.price = ride.price;
+        card.dataset.eta = ride.eta;
+        card.dataset.route = ride.route;
+        card.dataset.rating = ride.rating;
+        
+        const isFavorite = state.favorites.some(fav => fav.id === ride.id);
+        
+        card.innerHTML = `
+          <h3>${ride.type}</h3>
+          <p>Route: ${ride.route}</p>
+          <p class="price">Price: ₹${ride.price} • ETA: ${ride.eta} min</p>
+          <p>Rating: ${ride.rating} ★</p>
+          <div class="card-actions">
+            <button class="favorite-btn ${isFavorite ? 'favorited' : ''}" onclick="toggleFavorite(${JSON.stringify(ride).replace(/"/g, '&quot;')})" aria-label="${isFavorite ? 'Remove' : 'Add'} ${ride.route} from favorites">
+              <i class="fas fa-heart"></i>
+            </button>
+            <button class="btn" onclick="bookRide(${JSON.stringify(ride).replace(/"/g, '&quot;')})" aria-label="Book ${ride.type}">
+              Book Now
+            </button>
+          </div>
+        `;
+        
+        rideGrid.appendChild(card);
+      });
+    }
+    
+    function filterRides() {
+      const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+      const vehicleFilter = document.getElementById('vehicleFilter').value;
+      const sortFilter = document.getElementById('sortFilter').value;
+      
+      let filteredRides = [...state.rides];
+      
+      // Filter by search query
+      if (searchQuery) {
+        filteredRides = filteredRides.filter(ride => 
+          ride.route.toLowerCase().includes(searchQuery) ||
+          ride.type.toLowerCase().includes(searchQuery)
+        );
+      }
+      
+      // Filter by vehicle type
+      if (vehicleFilter) {
+        filteredRides = filteredRides.filter(ride => ride.vehicle === vehicleFilter);
+      }
+      
+      // Sort rides
+      if (sortFilter) {
+        filteredRides.sort((a, b) => {
+          switch (sortFilter) {
+            case 'price':
+              return a.price - b.price;
+            case 'price-desc':
+              return b.price - a.price;
+            case 'eta':
+              return a.eta - b.eta;
+            case 'rating':
+              return b.rating - a.rating;
+            default:
+              return 0;
+          }
+        });
+      }
+      
+      renderRides(filteredRides);
+      
+      if (searchQuery || vehicleFilter || sortFilter) {
+        logAction(`Filtered rides: Search="${searchQuery}", Vehicle="${vehicleFilter}", Sort="${sortFilter}"`);
+      }
+    }
+    
+    // Popup Functions
+    function initPopup() {
+      const closeBtn = document.querySelector('.custom-popup-close-btn');
+      
+      closeBtn.addEventListener('click', hideCustomPopup);
+      
+      customPopup.addEventListener('click', (e) => {
+        if (e.target === customPopup) hideCustomPopup();
+      });
+    }
+    
+    function showCustomPopup(message, type = 'info', actions = []) {
+      customPopupMessage.textContent = message;
+      customPopup.classList.add('show');
+      
+      // Set message color based on type
+      customPopupMessage.style.color = 
+        type === 'error' ? '#ff4d4d' : 
+        type === 'success' ? '#4CAF50' : 
+        type === 'confirm' ? '#FFA500' : 
+        'inherit';
+      
+      // Clear previous actions
+      popupActions.innerHTML = '';
+      
+      // Add new actions
+      actions.forEach(action => {
+        const button = document.createElement('button');
+        button.textContent = action.text;
+        button.className = action.class || 'btn';
+        button.onclick = action.action;
+        popupActions.appendChild(button);
+      });
+      
+      logAction(`Popup shown: ${message}`);
+    }
+    
+    function hideCustomPopup() {
+      customPopup.classList.remove('show');
+      logAction('Popup closed');
+    }
+    
+    // Location Services
+    function getUserLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            state.userLocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            logAction('User location obtained');
+          },
+          (error) => {
+            // Provide a more descriptive error message
+            let errorMessage = "Geolocation error: ";
+            switch (error.code) {
+              case error.PERMISSION_DENIED:
+                errorMessage += "User denied the request for Geolocation. This may be due to browser settings or a permissions policy.";
+                break;
+              case error.POSITION_UNAVAILABLE:
+                errorMessage += "Location information is unavailable.";
+                break;
+              case error.TIMEOUT:
+                errorMessage += "The request to get user location timed out.";
+                break;
+              case error.UNKNOWN_ERROR:
+                errorMessage += "An unknown error occurred.";
+                break;
+              default:
+                errorMessage += "An unexpected error occurred.";
+            }
+            if (error.message) {
+              errorMessage += ` (${error.message})`;
+            }
+            console.error(errorMessage);
+            logAction(errorMessage);
+            showCustomPopup(errorMessage, 'error'); // Show popup for the user
+          }
+        );
+      } else {
+        const noGeoMessage = "Geolocation is not supported by this browser. Please update your browser or use a different one.";
+        console.error(noGeoMessage);
+        logAction(noGeoMessage);
+        showCustomPopup(noGeoMessage, 'error'); // Show popup for the user
+      }
+    }
+    
+    // UI Helpers
+    function setLoading(isLoading) {
+      state.isLoading = isLoading;
+      
+      if (isLoading) {
+        searchButton.disabled = true;
+        searchButtonText.innerHTML = `<span class="loading-spinner"></span> Searching...`;
+      } else {
+        searchButton.disabled = false;
+        searchButtonText.textContent = 'Search Rides';
+      }
+    }
+    
+    function animateRideCards() {
+      gsap.from('.ride-card, .favorite-route', {
+        opacity: 0,
+        y: 50,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: 'back.out(1.2)',
+        delay: 0.3
+      });
+    }
+    
+    // Security and Logging
+    async function hashData(data) {
+      try {
+        const encoder = new TextEncoder();
+        const dataBuffer = encoder.encode(data);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
+        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+      } catch (error) {
+        console.error('Hashing error:', error);
+        return '';
+      }
+    }
+    
+    async function buildMerkleTree(leaves) {
+      if (leaves.length === 0) return '';
+      
+      try {
+        let tempLeaves = [...leaves];
+        
+        while (tempLeaves.length > 1) {
+          const temp = [];
+          
+          for (let i = 0; i < tempLeaves.length; i += 2) {
+            const left = tempLeaves[i];
+            const right = i + 1 < tempLeaves.length ? tempLeaves[i + 1] : left;
+            const combined = await hashData(left + right);
+            temp.push(combined);
+          }
+          
+          tempLeaves = temp;
+        }
+        
+        return tempLeaves[0];
+      } catch (error) {
+        console.error('Merkle tree error:', error);
+        return '';
+      }
+    }
+    
+    async function logAction(action) {
+      try {
+        const timestamp = new Date().toISOString();
+        const logEntry = `${action} at ${timestamp}`;
+        const hash = await hashData(logEntry);
+        
+        state.actionLogs.push({ log: logEntry, hash });
+        localStorage.setItem('actionLogs', JSON.stringify(state.actionLogs));
+        
+        const merkleRoot = await buildMerkleTree(state.actionLogs.map(log => log.hash));
+        console.log('Action Logged:', { logEntry, hash, merkleRoot });
+      } catch (error) {
+        console.error('Logging error:', error);
+      }
+    }
+    
+    // Client-Side Routing
+    const routes = {
+      'food-delivery': 'food-delivery.html',
+      'medical-services': 'medical-services.html',
+      'profile': 'profile.html'
+    };
+    
+    function navigateTo(page) {
+      const url = routes[page] || '#';
+      
+      if (url !== '#') {
+        window.location.href = url;
+      } else {
+        showCustomPopup(`Navigating to ${page.replace('-', ' ')}... (Module not yet implemented)`);
+      }
+      
+      logAction(`Navigated to ${page}`);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ONETouch - Food Delivery</title>
+  <meta name="description" content="Order food from your favorite restaurants with ONETouch's unified urban services platform">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" as="style" onload="this.rel='stylesheet'">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  </noscript>
+  
+  <style>
+    :root {
+      --primary-color: #7a5cf4;
+      --primary-hover: #6a4ce0;
+      --error-color: #ff4d4d;
+      --success-color: #4CAF50;
+      --warning-color: #FFA500;
+      --text-light: #ffffff;
+      --text-dark: #1a1a1a;
+      --bg-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      --bg-dark: linear-gradient(135deg, #1a1a1a, #2c2c2c, #3a3a3a);
+      --card-bg: rgba(255, 255, 255, 0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    /* Base Styles */
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-light);
+      min-height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+      transition: var(--transition);
+      line-height: 1.6;
+    }
+
+    /* Accessibility Modes */
+    body.dark-mode {
+      background: var(--bg-dark);
+      color: #e0e0e0;
+    }
+
+    body.high-contrast {
+      background: #000;
+      color: #fff;
+    }
+    
+    body.high-contrast * {
+      border-color: #fff !important;
+    }
+
+    body.high-contrast .restaurant-card,
+    body.high-contrast .favorites-section,
+    body.high-contrast .menu-section,
+    body.high-contrast .cart-section,
+    body.high-contrast .custom-popup-content,
+    body.high-contrast .nav-drawer {
+      background: #333;
+      border: 2px solid #fff !important;
+    }
+
+    /* Layout */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 15px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      position: sticky;
+      top: 0;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text-light);
+      text-decoration: none;
+    }
+
+    /* Navigation */
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .hamburger:hover, 
+    .hamburger:focus {
+      color: var(--primary-color);
+      outline: 2px solid var(--primary-color);
+      background: rgba(122, 92, 244, 0.1);
+    }
+
+    nav {
+      display: flex;
+      gap: 20px;
+    }
+
+    nav a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 16px;
+      transition: var(--transition);
+      padding: 8px 12px;
+      border-radius: 5px;
+    }
+
+    nav a:hover, 
+    nav a:focus {
+      color: var(--primary-color);
+      outline: 2px solid var(--primary-color);
+      background: rgba(122, 92, 244, 0.1);
+    }
+
+    /* Mode Toggles */
+    .mode-toggles {
+      display: flex;
+      gap: 10px;
+    }
+
+    .mode-toggle {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 20px;
+      cursor: pointer;
+      transition: var(--transition);
+      padding: 8px;
+      border-radius: 5px;
+    }
+
+    .mode-toggle:hover, 
+    .mode-toggle:focus {
+      color: var(--primary-color);
+      outline: 2px solid var(--primary-color);
+      background: rgba(122, 92, 244, 0.1);
+    }
+
+    /* Mobile Navigation Drawer */
+    .nav-drawer {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      transition: left 0.3s ease;
+      z-index: 200;
+    }
+
+    .nav-drawer.active {
+      left: 0;
+    }
+
+    .nav-drawer a, 
+    .nav-drawer button {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 18px;
+      padding: 12px;
+      border-radius: 5px;
+      transition: var(--transition);
+      text-align: left;
+      background: none;
+      border: none;
+    }
+
+    .nav-drawer a:hover, 
+    .nav-drawer a:focus,
+    .nav-drawer button:hover, 
+    .nav-drawer button:focus {
+      background: rgba(122, 92, 244, 0.2);
+      outline: 2px solid var(--primary-color);
+    }
+
+    .nav-drawer .close-btn {
+      align-self: flex-end;
+      font-size: 24px;
+      background: none;
+      border: none;
+      color: var(--text-light);
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    /* Search and Filter */
+    .search-filter {
+      display: flex;
+      gap: 15px;
+      margin: 25px 0;
+      flex-wrap: wrap;
+    }
+
+    .search-filter input,
+    .search-filter select {
+      flex: 1;
+      min-width: 200px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      color: var(--text-light);
+      font-size: 16px;
+      transition: var(--transition);
+    }
+
+    .search-filter input:focus,
+    .search-filter select:focus {
+      outline: 2px solid var(--primary-color);
+      background: black;
+    }
+
+    .search-filter input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Restaurant Grid */
+    .restaurant-grid, 
+    .favorites-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      padding: 20px 0;
+    }
+
+    .restaurant-card, 
+    .favorite-item {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 25px;
+      cursor: pointer;
+      transition: var(--transition);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .restaurant-card:hover, 
+    .restaurant-card:focus,
+    .favorite-item:hover, 
+    .favorite-item:focus {
+      transform: translateY(-10px);
+      outline: 2px solid var(--primary-color);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .restaurant-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      transition: var(--transition);
+    }
+
+    .restaurant-card:hover img {
+      transform: scale(1.03);
+    }
+
+    .restaurant-card h3, 
+    .favorite-item h3 {
+      font-size: 20px;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .restaurant-card p, 
+    .favorite-item p {
+      font-size: 14px;
+      opacity: 0.9;
+      margin: 8px 0;
+    }
+
+    .restaurant-rating {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #FFD700;
+    }
+
+    /* Menu Section */
+    .menu-section {
+      display: none;
+      padding: 25px;
+      background: var(--card-bg);
+      border-radius: 15px;
+      margin-top: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .menu-section.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .menu-section h2 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .back-to-restaurants {
+      background: none;
+      border: none;
+      color: var(--primary-color);
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .menu-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      transition: var(--transition);
+    }
+
+    .menu-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .menu-item-info {
+      flex: 1;
+    }
+
+    .menu-item-name {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .menu-item-description {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-bottom: 5px;
+    }
+
+    .menu-item-price {
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .menu-item-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Favorites */
+    .favorite-btn {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 20px;
+      cursor: pointer;
+      transition: var(--transition);
+      padding: 5px;
+    }
+
+    .favorite-btn.favorited {
+      color: var(--error-color);
+    }
+
+    .favorite-btn:hover, 
+    .favorite-btn:focus {
+      color: var(--error-color);
+      outline: 2px solid var(--error-color);
+      transform: scale(1.1);
+    }
+
+    .favorites-section {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin: 30px 0;
+      display: none;
+    }
+
+    .favorites-section.active {
+      display: block;
+    }
+
+    /* Cart Section */
+    .cart-section {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 350px;
+      max-width: 90%;
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: var(--transition);
+      z-index: 50;
+    }
+
+    .cart-section.active {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .cart-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: var(--primary-color);
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 40;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: var(--transition);
+    }
+
+    .cart-toggle:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-3px);
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background-color: var(--error-color);
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .cart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .cart-close {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .cart-items {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .cart-item-info {
+      flex: 1;
+    }
+
+    .cart-item-name {
+      font-weight: 600;
+    }
+
+    .cart-item-restaurant {
+      font-size: 12px;
+      opacity: 0.7;
+    }
+
+    .cart-item-price {
+      font-weight: 600;
+    }
+
+    .cart-item-remove {
+      background: none;
+      border: none;
+      color: var(--error-color);
+      cursor: pointer;
+      margin-left: 10px;
+    }
+
+    .cart-total {
+      font-weight: 600;
+      text-align: right;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .cart-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    /* Buttons */
+    .btn {
+      background-color: var(--primary-color);
+      color: var(--text-light);
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 600;
+    }
+
+    .btn:hover, 
+    .btn:focus {
+      background-color: var(--primary-hover);
+      outline: 2px solid var(--primary-color);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-secondary:hover,
+    .btn-secondary:focus {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-danger {
+      background-color: var(--error-color);
+    }
+
+    .btn-danger:hover,
+    .btn-danger:focus {
+      background-color: #e53935;
+    }
+
+    /* Popup */
+    .custom-popup-overlay {
+      display: flex;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .custom-popup-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .custom-popup-content {
+      background: #2c5364;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      position: relative;
+      transform: translateY(-20px);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .custom-popup-overlay.show .custom-popup-content {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .custom-popup-close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 28px;
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      transition: var(--transition);
+      background: none;
+      border: none;
+      padding: 5px;
+    }
+
+    .custom-popup-close-btn:hover, 
+    .custom-popup-close-btn:focus {
+      color: var(--text-light);
+      outline: 2px solid var(--primary-color);
+    }
+
+    /* Loading Spinner */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: var(--primary-color);
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .hamburger { display: block; }
+      nav, .mode-toggles { display: none; }
+      
+      .restaurant-grid, 
+      .favorites-grid { 
+        grid-template-columns: 1fr; 
+      }
+      
+      .search-filter { 
+        flex-direction: column; 
+      }
+      
+      .search-filter input, 
+      .search-filter select { 
+        min-width: 100%; 
+      }
+      
+      header {
+        padding: 15px 0;
+      }
+      
+      .cart-section {
+        width: calc(100% - 40px);
+        right: 20px;
+        left: 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .restaurant-card, 
+      .favorite-item { 
+        padding: 20px; 
+      }
+      
+      .restaurant-card img { 
+        height: 150px; 
+      }
+      
+      .menu-item { 
+        flex-direction: column; 
+        gap: 10px; 
+        text-align: left;
+      }
+      
+      .menu-item-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+      
+      .cart-toggle {
+        bottom: 10px;
+        right: 10px;
+        width: 50px;
+        height: 50px;
+      }
+    }
+
+    /* Footer Styles */
+    .footer {
+      background: rgba(0, 0, 0, 0.3); /* Slightly darker, semi-transparent background */
+      color: var(--text-light);
+      padding: 40px 20px;
+      margin-top: 50px; /* Space above the footer */
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+      text-align: center;
+      width: 100%;
+      box-sizing: border-box;
+      flex-shrink: 0; /* Prevent footer from shrinking */
+    }
+
+    .footer-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      max-width: 1200px;
+      margin: 0 auto;
+      gap: 30px; /* Space between footer sections */
+    }
+
+    .footer-section {
+      flex: 1;
+      min-width: 200px;
+      margin-bottom: 20px;
+    }
+
+    .footer-section h3 {
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      font-size: 1.2em;
+    }
+
+    .footer-section p {
+      font-size: 0.9em;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .footer-section ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .footer-section ul li {
+      margin-bottom: 10px;
+    }
+
+    .footer-section ul li a {
+      color: var(--text-light);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .footer-section ul li a:hover {
+      color: var(--primary-hover);
+    }
+
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .social-icons a {
+      color: var(--text-light);
+      font-size: 1.5em;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .social-icons a:hover {
+      background-color: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    .footer-bottom {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.85em;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Responsive adjustments for smaller screens */
+    @media (max-width: 768px) {
+      .footer-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      .footer-section {
+        text-align: center;
+        width: 100%;
+      }
+      .footer-section ul {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="index.html" class="logo">ONETouch</a>
+      <button class="hamburger" aria-label="Toggle navigation menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <nav aria-label="Main navigation">
+        <a href="food-delivery.html">Food Delivery</a>
+        <a href="ride-booking.html">Ride Booking</a>
+        <a href="medical-services.html">Medical Services</a>
+        <a href="shopping.html">Shopping</a>
+        <a href="cart.html">Cart</a>
+        <a href="auth.html">Account</a>
+      </nav>
+    </header>
+
+    <div id="navDrawer" class="nav-drawer">
+      <button class="close-btn" aria-label="Close navigation menu" onclick="closeNav()">&times;</button>
+      <a href="food-delivery.html">Food Delivery</a>
+      <a href="ride-booking.html">Ride Booking</a>
+      <a href="medical-services.html">Medical Services</a>
+      <a href="shopping.html">Shopping</a>
+      <a href="cart.html">Cart</a>
+      <a href="auth.html">Account</a>
+      <button class="mode-toggle" aria-label="Toggle dark mode" onclick="toggleDarkMode(); closeNav()"> Dark Mode <i class="fas fa-moon"></i> </button>
+      <button class="mode-toggle" aria-label="Toggle high contrast mode" onclick="toggleHighContrast(); closeNav()"> High Contrast <i class="fas fa-adjust"></i> </button>
+    </div>
+
+    <main>
+      <section class="search-filter">
+        <input type="text" id="searchInput" placeholder="Search restaurants or food items..." aria-label="Search restaurants or food items" oninput="filterRestaurantsAndItems()">
+        <select id="cuisineFilter" aria-label="Filter by cuisine" onchange="filterRestaurantsAndItems()">
+          <option value="">All Cuisines</option>
+          <option value="Indian">Indian</option>
+          <option value="North Indian">North Indian</option>
+          <option value="South Indian">South Indian</option>
+          <option value="Street Food">Street Food</option>
+          <option value="Biryani">Biryani</option>
+          <option value="Desserts (Indian)">Desserts (Indian)</option>
+          <option value="Italian">Italian</option>
+          <option value="Mexican">Mexican</option>
+          <option value="Chinese">Chinese</option>
+          <option value="Japanese">Japanese</option>
+          <option value="American">American</option>
+          <option value="Vegan">Vegan</option>
+        </select>
+        <select id="ratingFilter" aria-label="Filter by rating" onchange="filterRestaurantsAndItems()">
+          <option value="">All Ratings</option>
+          <option value="4.5">4.5+ Stars</option>
+          <option value="4">4+ Stars</option>
+          <option value="3">3+ Stars</option>
+        </select>
+      </section>
+
+      <section id="favoritesSection" class="favorites-section">
+        <h2>Your Favorites</h2>
+        <div id="favoritesGrid" class="favorites-grid"></div>
+      </section>
+
+      <section class="restaurant-grid" id="restaurantGrid">
+        </section>
+
+      <div class="cart-toggle" onclick="toggleCart()" aria-label="View cart">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-badge" id="cartBadge">0</span>
+      </div>
+
+      <div id="cart" class="cart-section">
+        <div class="cart-header">
+          <h3>Your Order</h3>
+          <button class="cart-close" onclick="toggleCart()" aria-label="Close cart">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="cart-items" id="cartItems"></div>
+        <div class="cart-total">Total: ₹<span id="cartTotal">0.00</span></div>
+        <div class="cart-buttons">
+          <button class="btn-danger" onclick="clearCart()" aria-label="Clear cart">Clear</button>
+          <button class="btn" onclick="placeOrder()" aria-label="Place order">Checkout</button>
+        </div>
+      </div>
+
+    </main>
+
+    <div id="customPopup" class="custom-popup-overlay">
+      <div class="custom-popup-content">
+        <button class="custom-popup-close-btn" aria-label="Close popup">&times;</button>
+        <p id="customPopupMessage"></p>
+        <div id="popupActions" style="margin-top: 20px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-container">
+        <div class="footer-section about">
+            <h3>About ONETouch</h3>
+            <p>Your ultimate unified urban services platform. Simplifying your daily life with food delivery, ride bookings, medical services, and shopping all in one place.</p>
+        </div>
+        <div class="footer-section links">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="food-delivery.html">Food Delivery</a></li>
+                <li><a href="ride-booking.html">Ride Booking</a></li>
+                <li><a href="medical-services.html">Medical Services</a></li>
+                <li><a href="shopping.html">Shopping</a></li>
+                <li><a href="auth.html">Account</a></li>
+            </ul>
+        </div>
+        <div class="footer-section contact">
+            <h3>Contact Us</h3>
+            <p>Email: support@onetouch.com</p>
+            <p>Phone: +91 98765 43210</p>
+            <p>Address: 123 Urban St, Metropolis, India</p>
+        </div>
+        <div class="footer-section social">
+            <h3>Follow Us</h3>
+            <div class="social-icons">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2025 ONETouch. All rights reserved.</p>
+    </div>
+</footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script>
+    // Global state object
+    const state = {
+      restaurants: [],
+      menuItems: [],
+      cart: JSON.parse(localStorage.getItem('onetouchCart')) || [], // Changed to onetouchCart
+      favorites: JSON.parse(localStorage.getItem('foodFavorites')) || [],
+      actionLogs: JSON.parse(localStorage.getItem('actionLogs')) || [], // For Merkle Tree
+      currentRestaurant: null, // To keep track of the currently viewed restaurant's menu
+    };
+
+    // DOM Elements
+    const searchInput = document.getElementById('searchInput');
+    const cuisineFilter = document.getElementById('cuisineFilter');
+    const ratingFilter = document.getElementById('ratingFilter');
+    const restaurantGrid = document.getElementById('restaurantGrid');
+    const cartBadge = document.getElementById('cartBadge');
+    const customPopup = document.getElementById('customPopup');
+    const customPopupMessage = document.getElementById('customPopupMessage');
+    const popupActions = document.getElementById('popupActions');
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadSampleData();
+      initNavigation();
+      initPopup();
+      initEventListeners();
+      updateCart();
+      renderRestaurants();
+      checkSavedModes();
+      animateRestaurantCards();
+    });
+
+    // Load sample restaurant and menu data
+    async function loadSampleData() {
+      // Sample restaurant data
+      state.restaurants = [
+        { id: 'restaurant1', name: 'Pasta Palace', cuisine: 'Italian', rating: 4.5, deliveryTime: '25-35 min', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80' },
+        { id: 'restaurant2', name: 'Curry House', cuisine: 'Indian', rating: 4.2, deliveryTime: '30-45 min', image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1136&q=80' },
+        { id: 'restaurant3', name: 'Taco Fiesta', cuisine: 'Mexican', rating: 4.3, deliveryTime: '20-30 min', image: 'https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80' },
+        { id: 'restaurant4', name: 'Dragon Wok', cuisine: 'Chinese', rating: 4.0, deliveryTime: '35-50 min', image: 'https://images.unsplash.com/photo-1563245372-f3b71569767b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80' },
+        { id: 'restaurant5', name: 'Sushi Central', cuisine: 'Japanese', rating: 4.6, deliveryTime: '20-30 min', image: 'https://images.unsplash.com/photo-1579871754025-a13a0e69837c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80' },
+        { id: 'restaurant6', name: 'Green Eats', cuisine: 'Vegan', rating: 4.4, deliveryTime: '25-35 min', image: 'https://images.unsplash.com/photo-1512621776951-a573985790a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80' },
+        { id: 'restaurant7', name: 'Dosa Plaza', cuisine: 'South Indian', rating: 4.7, deliveryTime: '20-30 min', image: 'https://images.unsplash.com/photo-1626248911571-f76159265f49?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+        { id: 'restaurant8', name: 'Punjabi Dhaba', cuisine: 'North Indian', rating: 4.5, deliveryTime: '30-40 min', image: 'https://images.unsplash.com/photo-1567188040759-c02b667822d7?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+        { id: 'restaurant9', name: 'Chaat Corner', cuisine: 'Street Food', rating: 4.8, deliveryTime: '15-25 min', image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a647?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+        { id: 'restaurant10', name: 'Biryani King', cuisine: 'Biryani', rating: 4.6, deliveryTime: '25-40 min', image: 'https://plus.unsplash.com/photos/removebg/iP2W6eJm_gE-unsplash-removebg-preview.png?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+        { id: 'restaurant11', name: 'Sweet Delights', cuisine: 'Desserts (Indian)', rating: 4.7, deliveryTime: '20-30 min', image: 'https://images.unsplash.com/photo-1596700810207-6b45053e1a0d?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+      ];
+
+      // Sample menu items
+      state.menuItems = [
+        { id: 'item1', restaurantId: 'restaurant1', name: 'Spaghetti Carbonara', description: 'Classic Italian pasta with eggs, cheese, pancetta', price: 12.50, rating: 4.5, image: 'https://placehold.co/150x150/FFC107/000000?text=Spaghetti' },
+        { id: 'item2', restaurantId: 'restaurant1', name: 'Margherita Pizza', description: 'Tomato, mozzarella, basil', price: 10.00, rating: 4.7, image: 'https://placehold.co/150x150/FFC107/000000?text=Pizza' },
+        { id: 'item3', restaurantId: 'restaurant2', name: 'Butter Chicken', description: 'Creamy tomato-based curry with chicken', price: 15.00, rating: 4.6, image: 'https://placehold.co/150x150/FFC107/000000?text=Butter+Chicken' },
+        { id: 'item4', restaurantId: 'restaurant2', name: 'Vegetable Samosa', description: 'Crispy pastry with spiced potato and pea filling', price: 4.00, rating: 4.3, image: 'https://placehold.co/150x150/FFC107/000000?text=Samosa' },
+        { id: 'item5', restaurantId: 'restaurant3', name: 'Beef Tacos', description: 'Three soft tacos with seasoned beef, salsa, and guacamole', price: 11.50, rating: 4.4, image: 'https://placehold.co/150x150/FFC107/000000?text=Tacos' },
+        { id: 'item6', restaurantId: 'restaurant3', name: 'Chicken Burrito', description: 'Large burrito with chicken, rice, beans, and cheese', price: 9.50, rating: 4.2, image: 'https://placehold.co/150x150/FFC107/000000?text=Burrito' },
+        { id: 'item7', restaurantId: 'restaurant4', name: 'Kung Pao Chicken', description: 'Spicy stir-fry with chicken, peanuts, and vegetables', price: 13.99, rating: 4.5, image: 'https://placehold.co/150x150/FFC107/000000?text=Kung+Pao' },
+        { id: 'item8', restaurantId: 'restaurant4', name: 'Vegetable Lo Mein', description: 'Stir-fried noodles with mixed vegetables', price: 11.99, rating: 4.1, image: 'https://placehold.co/150x150/FFC107/000000?text=Lo+Mein' },
+        { id: 'item9', restaurantId: 'restaurant5', name: 'California Roll', description: 'Crab, avocado, and cucumber wrapped in seaweed and rice', price: 8.99, rating: 4.3, image: 'https://placehold.co/150x150/FFC107/000000?text=Sushi' },
+        { id: 'item10', restaurantId: 'restaurant5', name: 'Teriyaki Chicken', description: 'Grilled chicken with sweet teriyaki sauce and rice', price: 14.99, rating: 4.6, image: 'https://placehold.co/150x150/FFC107/000000?text=Teriyaki' },
+        { id: 'item11', restaurantId: 'restaurant6', name: 'Vegan Burger', description: 'Plant-based patty with lettuce, tomato, and vegan mayo', price: 10.99, rating: 4.4, image: 'https://placehold.co/150x150/FFC107/000000?text=Vegan+Burger' },
+        { id: 'item12', restaurantId: 'restaurant6', name: 'Quinoa Salad', description: 'Mixed greens with quinoa, avocado, and balsamic dressing', price: 9.99, rating: 4.2, image: 'https://placehold.co/150x150/FFC107/000000?text=Salad' },
+        // New Indian menu items
+        { id: 'item13', restaurantId: 'restaurant7', name: 'Masala Dosa', description: 'Crispy rice crepe with spiced potato filling', price: 3.50, rating: 4.8, image: 'https://placehold.co/150x150/FFC107/000000?text=Dosa' },
+        { id: 'item14', restaurantId: 'restaurant7', name: 'Idli Sambar', description: 'Steamed rice cakes with lentil stew', price: 2.50, rating: 4.5, image: 'https://placehold.co/150x150/FFC107/000000?text=Idli' },
+        { id: 'item15', restaurantId: 'restaurant8', name: 'Paneer Butter Masala', description: 'Cottage cheese in rich tomato gravy', price: 8.00, rating: 4.6, image: 'https://placehold.co/150x150/FFC107/000000?text=Paneer' },
+        { id: 'item16', restaurantId: 'restaurant8', name: 'Dal Makhani', description: 'Black lentils cooked in a creamy sauce', price: 7.00, rating: 4.4, image: 'https://placehold.co/150x150/FFC107/000000?text=Dal' },
+        { id: 'item17', restaurantId: 'restaurant9', name: 'Vada Pav', description: 'Spicy potato fritter in a bun', price: 1.50, rating: 4.7, image: 'https://placehold.co/150x150/FFC107/000000?text=Vada+Pav' },
+        { id: 'item18', restaurantId: 'restaurant9', name: 'Pani Puri', description: 'Hollow crispy balls filled with spiced water and potato', price: 2.00, rating: 4.9, image: 'https://placehold.co/150x150/FFC107/000000?text=Pani+Puri' },
+        { id: 'item19', restaurantId: 'restaurant10', name: 'Chicken Biryani (Half)', description: 'Fragrant basmati rice cooked with marinated chicken and spices', price: 9.00, rating: 4.7, image: 'https://placehold.co/150x150/FFC107/000000?text=Chicken+Biryani' },
+        { id: 'item20', restaurantId: 'restaurant10', name: 'Vegetable Biryani', description: 'Aromatic rice dish with mixed vegetables and Indian spices', price: 7.50, rating: 4.3, image: 'https://placehold.co/150x150/FFC107/000000?text=Veg+Biryani' },
+        { id: 'item21', restaurantId: 'restaurant11', name: 'Gulab Jamun', description: 'Deep-fried milk-solids balls soaked in rose-flavored syrup', price: 3.00, rating: 4.8, image: 'https://placehold.co/150x150/FFC107/000000?text=Gulab+Jamun' },
+        { id: 'item22', restaurantId: 'restaurant11', name: 'Jalebi', description: 'Crispy, syrupy sweet pretzels', price: 2.00, rating: 4.5, image: 'https://placehold.co/150x150/FFC107/000000?text=Jalebi' },
+      ];
+      logAction('Loaded sample data');
+    }
+
+    // Navigation Drawer Functions
+    function initNavigation() {
+      const navDrawer = document.getElementById('navDrawer');
+      const hamburger = document.querySelector('.hamburger');
+      const closeBtn = navDrawer.querySelector('.close-btn');
+
+      hamburger.addEventListener('click', openNav);
+      closeBtn.addEventListener('click', closeNav);
+    }
+
+    function openNav() {
+      const navDrawer = document.getElementById('navDrawer');
+      navDrawer.classList.add('active');
+      gsap.to(navDrawer, { x: 250, duration: 0.3, ease: 'power2.out' });
+      logAction('Opened navigation menu');
+    }
+
+    function closeNav() {
+      const navDrawer = document.getElementById('navDrawer');
+      gsap.to(navDrawer, { x: -250, duration: 0.3, ease: 'power2.in', onComplete: () => navDrawer.classList.remove('active') });
+      logAction('Closed navigation menu');
+    }
+
+    // Mode Toggles
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      const icons = document.querySelectorAll('.mode-toggle i');
+      icons.forEach(icon => {
+        if (document.body.classList.contains('dark-mode')) {
+          icon.classList.replace('fa-sun', 'fa-moon');
+        } else {
+          icon.classList.replace('fa-moon', 'fa-sun');
+        }
+      });
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+      logAction('Toggled dark mode');
+    }
+
+    function toggleHighContrast() {
+      document.body.classList.toggle('high-contrast');
+      localStorage.setItem('highContrast', document.body.classList.contains('high-contrast'));
+      logAction('Toggled high contrast mode');
+    }
+
+    function checkSavedModes() {
+      if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+      if (localStorage.getItem('highContrast') === 'true') {
+        document.body.classList.add('high-contrast');
+      }
+    }
+
+    // Popup Functions
+    function initPopup() {
+      const closeButton = customPopup.querySelector('.custom-popup-close-btn');
+      closeButton.addEventListener('click', hideCustomPopup);
+      customPopup.addEventListener('click', (e) => {
+        if (e.target === customPopup) {
+          hideCustomPopup();
+        }
+      });
+    }
+
+    function showCustomPopup(message, actions = [], duration = 0) {
+      customPopupMessage.textContent = message;
+      popupActions.innerHTML = '';
+      actions.forEach(action => {
+        const button = document.createElement('button');
+        button.className = 'btn';
+        button.textContent = action.text;
+        button.onclick = () => {
+          action.handler();
+          hideCustomPopup();
+        };
+        popupActions.appendChild(button);
+      });
+      customPopup.classList.add('show');
+      if (duration > 0) {
+        setTimeout(hideCustomPopup, duration);
+      }
+      logAction('Showed custom popup');
+    }
+
+    function hideCustomPopup() {
+      customPopup.classList.remove('show');
+      logAction('Hid custom popup');
+    }
+
+    // Event Listeners
+    function initEventListeners() {
+      // Delegated event listener for adding to cart and showing menu
+      // Changed the listener from restaurantGrid to document.querySelector('main')
+      // because menu items are appended directly to main, not always inside restaurantGrid.
+      document.querySelector('main').addEventListener('click', (e) => {
+        if (e.target.classList.contains('add-to-cart-btn')) {
+          const itemId = e.target.closest('.menu-item').dataset.id;
+          addToCart(itemId);
+        } else if (e.target.closest('.restaurant-card')) {
+          const restaurantId = e.target.closest('.restaurant-card').dataset.id;
+          showMenu(restaurantId);
+        }
+      });
+
+      // Delegated event listener for favorite button
+      restaurantGrid.addEventListener('click', (e) => {
+        if (e.target.classList.contains('favorite-btn')) {
+          const restaurantId = e.target.closest('.restaurant-card') ? e.target.closest('.restaurant-card').dataset.id : e.target.closest('.favorite-item').dataset.id;
+          toggleFavorite(restaurantId);
+        }
+      });
+    }
+
+    // Restaurant and Menu Rendering
+    function renderRestaurants() {
+      restaurantGrid.innerHTML = '';
+      const searchQuery = searchInput.value.toLowerCase();
+      const selectedCuisine = cuisineFilter.value;
+      const selectedRating = parseFloat(ratingFilter.value);
+
+      const filteredRestaurants = state.restaurants.filter(restaurant => {
+        const matchesSearch = restaurant.name.toLowerCase().includes(searchQuery) ||
+                              state.menuItems.some(item => item.restaurantId === restaurant.id && item.name.toLowerCase().includes(searchQuery));
+        const matchesCuisine = selectedCuisine === '' || restaurant.cuisine === selectedCuisine;
+        const matchesRating = isNaN(selectedRating) || restaurant.rating >= selectedRating;
+        return matchesSearch && matchesCuisine && matchesRating;
+      });
+
+      if (filteredRestaurants.length === 0) {
+        restaurantGrid.innerHTML = '<p style="text-align: center; opacity: 0.7;">No restaurants found matching your criteria.</p>';
+        return;
+      }
+
+      filteredRestaurants.forEach(restaurant => {
+        const card = document.createElement('div');
+        card.className = 'restaurant-card';
+        card.dataset.id = restaurant.id;
+        const isFavorited = state.favorites.includes(restaurant.id);
+        card.innerHTML = `
+          <img src="${restaurant.image}" alt="${restaurant.name}">
+          <h3>${restaurant.name}</h3>
+          <p>${restaurant.cuisine}</p>
+          <div class="restaurant-rating">
+            <i class="fas fa-star"></i> ${restaurant.rating}
+          </div>
+          <p>Delivery: ${restaurant.deliveryTime}</p>
+          <button class="favorite-btn ${isFavorited ? 'favorited' : ''}" aria-label="${isFavorited ? 'Remove from favorites' : 'Add to favorites'}">
+            <i class="${isFavorited ? 'fas' : 'far'} fa-heart"></i>
+          </button>
+        `;
+        restaurantGrid.appendChild(card);
+      });
+      animateRestaurantCards();
+      logAction('Rendered restaurants');
+    }
+
+    function filterRestaurantsAndItems() {
+      renderRestaurants();
+      // Logic for filtering menu items when a restaurant menu is open
+      if (state.currentRestaurant) {
+        showMenu(state.currentRestaurant.id);
+      }
+    }
+
+    // Favorites
+    function toggleFavorite(restaurantId) {
+      const index = state.favorites.indexOf(restaurantId);
+      if (index > -1) {
+        state.favorites.splice(index, 1);
+        logAction(`Removed restaurant ${restaurantId} from favorites`);
+        showCustomPopup('Removed from Favorites!', [], 2000);
+      } else {
+        state.favorites.push(restaurantId);
+        logAction(`Added restaurant ${restaurantId} to favorites`);
+        showCustomPopup('Added to Favorites!', [], 2000);
+      }
+      localStorage.setItem('foodFavorites', JSON.stringify(state.favorites));
+      updateFavorites();
+      renderRestaurants(); // Re-render to update heart icon
+    }
+
+    function updateFavorites() {
+      const favoritesSection = document.getElementById('favoritesSection');
+      const favoritesGrid = document.getElementById('favoritesGrid');
+      favoritesGrid.innerHTML = '';
+
+      if (state.favorites.length > 0) {
+        favoritesSection.classList.add('active');
+        state.favorites.forEach(favId => {
+          const restaurant = state.restaurants.find(r => r.id === favId);
+          if (restaurant) {
+            const favoriteItem = document.createElement('div');
+            favoriteItem.className = 'favorite-item';
+            favoriteItem.dataset.id = restaurant.id;
+            favoriteItem.innerHTML = `
+              <h3>${restaurant.name}</h3>
+              <p>${restaurant.cuisine}</p>
+              <div class="restaurant-rating">
+                <i class="fas fa-star"></i> ${restaurant.rating}
+              </div>
+              <button class="favorite-btn favorited" aria-label="Remove from favorites">
+                <i class="fas fa-heart"></i>
+              </button>
+            `;
+            favoritesGrid.appendChild(favoriteItem);
+          }
+        });
+        gsap.fromTo(favoritesGrid.children, { opacity: 0, y: 20 }, { opacity: 1, y: 0, stagger: 0.1, duration: 0.5 });
+      } else {
+        favoritesSection.classList.remove('active');
+      }
+      logAction('Updated favorites display');
+    }
+
+    // Menu Display
+    function showMenu(restaurantId) {
+      // Remove any existing menu section
+      const existingMenuSection = document.querySelector('.menu-section');
+      if (existingMenuSection) {
+        existingMenuSection.remove();
+      }
+
+      const menuSection = document.createElement('section');
+      menuSection.className = 'menu-section active';
+      menuSection.id = `menu-${restaurantId}`;
+
+      const restaurant = state.restaurants.find(r => r.id === restaurantId);
+      if (!restaurant) {
+        console.error('Restaurant not found:', restaurantId);
+        return;
+      }
+      state.currentRestaurant = restaurant; // Set current restaurant
+
+      // Hide restaurant grid and search/filter when menu is shown
+      document.getElementById('restaurantGrid').style.display = 'none';
+      document.getElementById('favoritesSection').style.display = 'none';
+      document.querySelector('.search-filter').style.display = 'none';
+
+      let menuHtml = `
+        <h2>
+          ${restaurant.name} Menu
+          <button class="back-to-restaurants" onclick="hideMenu()">
+            <i class="fas fa-arrow-left"></i> Back to Restaurants
+          </button>
+        </h2>
+      `;
+
+      const filteredMenuItems = state.menuItems.filter(item => 
+        item.restaurantId === restaurantId && 
+        item.name.toLowerCase().includes(searchInput.value.toLowerCase())
+      );
+
+      if (filteredMenuItems.length === 0) {
+        menuHtml += '<p style="text-align: center; opacity: 0.7;">No menu items found matching your search.</p>';
+      } else {
+        filteredMenuItems.forEach(item => {
+          menuHtml += `
+            <div class="menu-item" data-id="${item.id}">
+              <div class="menu-item-info">
+                <div class="menu-item-name">${item.name}</div>
+                <div class="menu-item-description">${item.description}</div>
+                <div class="menu-item-price">₹${item.price.toFixed(2)}</div>
+              </div>
+              <div class="menu-item-actions">
+                <button class="btn add-to-cart-btn">Add to Cart</button>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      menuSection.innerHTML = menuHtml;
+      document.querySelector('main').appendChild(menuSection);
+      gsap.fromTo(menuSection, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5 });
+      logAction(`Showed menu for restaurant ${restaurant.name}`);
+    }
+
+    function hideMenu() {
+      const menuSection = document.querySelector('.menu-section.active');
+      if (menuSection) {
+        gsap.to(menuSection, { 
+          opacity: 0, 
+          y: 20, 
+          duration: 0.3, 
+          onComplete: () => {
+            menuSection.remove();
+            document.getElementById('restaurantGrid').style.display = 'grid'; // Show restaurant grid
+            document.getElementById('favoritesSection').style.display = 'block'; // Show favorites section
+            document.querySelector('.search-filter').style.display = 'flex'; // Show search/filter
+            state.currentRestaurant = null; // Clear current restaurant
+            logAction('Hid restaurant menu');
+          }
+        });
+      }
+    }
+
+    // Cart Functions
+    function addToCart(itemId) {
+      const item = state.menuItems.find(i => i.id === itemId);
+      if (item) {
+        let cart = JSON.parse(localStorage.getItem('onetouchCart')) || []; // Use unified cart
+        const existingItemIndex = cart.findIndex(cartItem => cartItem.id === item.id && cartItem.type === 'food');
+
+        if (existingItemIndex > -1) {
+          cart[existingItemIndex].quantity++;
+        } else {
+          cart.push({ 
+            id: item.id, 
+            name: item.name, 
+            price: item.price, 
+            quantity: 1, 
+            type: 'food', // Identify item type
+            restaurantId: item.restaurantId, // Keep restaurantId for display in cart
+            image: item.image // Add image to cart item
+          });
+        }
+        localStorage.setItem('onetouchCart', JSON.stringify(cart)); // Save to unified cart
+        updateCart();
+        showCustomPopup(`${item.name} added to cart!`, [], 1500);
+        logAction(`Added ${item.name} to cart`);
+      }
+    }
+
+    function removeFromCart(itemId) {
+      let cart = JSON.parse(localStorage.getItem('onetouchCart')) || []; // Use unified cart
+      cart = cart.filter(item => !(item.id === itemId && item.type === 'food')); // Filter by ID and type
+      localStorage.setItem('onetouchCart', JSON.stringify(cart)); // Save to unified cart
+      updateCart();
+      showCustomPopup('Item removed from cart.', [], 1500);
+      logAction(`Removed item ${itemId} from cart`);
+    }
+
+    function updateCart() {
+      const cartItemsContainer = document.getElementById('cartItems');
+      const cartTotalSpan = document.getElementById('cartTotal');
+      let total = 0;
+
+      cartItemsContainer.innerHTML = '';
+      const foodItemsInCart = (JSON.parse(localStorage.getItem('onetouchCart')) || []).filter(item => item.type === 'food');
+
+      if (foodItemsInCart.length === 0) {
+        cartItemsContainer.innerHTML = '<p style="text-align: center; opacity: 0.7;">Your cart is empty.</p>';
+        cartBadge.textContent = '0';
+        cartTotalSpan.textContent = '0.00';
+      } else {
+        foodItemsInCart.forEach(item => {
+          const cartItemDiv = document.createElement('div');
+          cartItemDiv.className = 'cart-item';
+          const restaurant = state.restaurants.find(r => r.id === item.restaurantId);
+          cartItemDiv.innerHTML = `
+            <div class="cart-item-info">
+              <div class="cart-item-name">${item.name} (x${item.quantity})</div>
+              <div class="cart-item-restaurant">${restaurant ? restaurant.name : ''}</div>
+            </div>
+            <div class="cart-item-price">₹${(item.price * item.quantity).toFixed(2)}</div>
+            <button class="cart-item-remove" onclick="removeFromCart('${item.id}')" aria-label="Remove ${item.name} from cart">
+              <i class="fas fa-trash"></i>
+            </button>
+          `;
+          cartItemsContainer.appendChild(cartItemDiv);
+          total += item.price * item.quantity;
+        });
+        gsap.fromTo(cartItemsContainer.children, { opacity: 0, x: 20 }, { opacity: 1, x: 0, stagger: 0.05, duration: 0.3 });
+        cartBadge.textContent = foodItemsInCart.reduce((sum, item) => sum + item.quantity, 0);
+        cartTotalSpan.textContent = total.toFixed(2);
+      }
+      logAction('Updated food cart display');
+    }
+
+    function toggleCart() {
+      const cartSection = document.getElementById('cart');
+      cartSection.classList.toggle('active');
+      logAction('Toggled cart visibility');
+    }
+
+    function clearCart() {
+      let cart = JSON.parse(localStorage.getItem('onetouchCart')) || [];
+      cart = cart.filter(item => item.type !== 'food'); // Only clear food items
+      localStorage.setItem('onetouchCart', JSON.stringify(cart));
+      updateCart();
+      showCustomPopup('Food cart cleared!', [], 1500);
+      logAction('Cleared food cart');
+    }
+
+    function placeOrder() {
+      const foodItemsInCart = (JSON.parse(localStorage.getItem('onetouchCart')) || []).filter(item => item.type === 'food');
+      if (foodItemsInCart.length === 0) {
+        showCustomPopup('Your food cart is empty. Please add items before checking out.', [], 2000);
+        return;
+      }
+
+      showCustomPopup('Food Order Placed Successfully!', [
+        { text: 'View Order History', handler: () => console.log('Navigate to Order History') },
+        { text: 'Continue Shopping', handler: () => hideCustomPopup() }
+      ], 5000);
+
+      // In a real application, you'd send the order to a backend.
+      // For this demo, we just clear the food items from the unified cart.
+      clearCart();
+      logAction('Placed food order');
+    }
+
+    // GSAP Animations
+    function animateRestaurantCards() {
+      gsap.fromTo(".restaurant-card", 
+        { opacity: 0, y: 50, scale: 0.9 }, 
+        { opacity: 1, y: 0, scale: 1, stagger: 0.08, duration: 0.6, ease: "back.out(1.7)" }
+      );
+      logAction('Animated restaurant cards');
+    }
+
+    // Merkle Tree for Action Logging
+    // Simplified hashing function (for demo purposes)
+    async function hashData(data) {
+      try {
+        const textEncoder = new TextEncoder();
+        const dataBuffer = textEncoder.encode(data);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hexHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return hexHash;
+      } catch (error) {
+        console.error('Hashing error:', error);
+        return '';
+      }
+    }
+    
+    async function buildMerkleTree(leaves) {
+      if (leaves.length === 0) return '';
+      
+      try {
+        let tempLeaves = [...leaves];
+        
+        while (tempLeaves.length > 1) {
+          const temp = [];
+          
+          for (let i = 0; i < tempLeaves.length; i += 2) {
+            const left = tempLeaves[i];
+            const right = i + 1 < tempLeaves.length ? tempLeaves[i + 1] : left;
+            const combined = await hashData(left + right);
+            temp.push(combined);
+          }
+          
+          tempLeaves = temp;
+        }
+        
+        return tempLeaves[0];
+      } catch (error) {
+        console.error('Merkle tree error:', error);
+        return '';
+      }
+    }
+    
+    async function logAction(action) {
+      try {
+        const timestamp = new Date().toISOString();
+        const logEntry = `${action} at ${timestamp}`;
+        const hash = await hashData(logEntry);
+        
+        state.actionLogs.push({ log: logEntry, hash });
+        localStorage.setItem('actionLogs', JSON.stringify(state.actionLogs));
+        
+        const merkleRoot = await buildMerkleTree(state.actionLogs.map(log => log.hash));
+        console.log('Action Logged:', { logEntry, hash, merkleRoot });
+      } catch (error) {
+        console.error('Logging error:', error);
+      }
+    }
+  </script>
+</body>
+</html>

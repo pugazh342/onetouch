@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ONETouch - Your Cart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" as="style" onload="this.rel='stylesheet'">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  </noscript>
+  <style>
+    /* Basic Styles - consistent with other ONETouch pages */
+    :root {
+      --primary-color: #7a5cf4;
+      --primary-hover: #6a4ce0;
+      --error-color: #ff4d4d;
+      --success-color: #4CAF50;
+      --warning-color: #FFA500;
+      --text-light: #ffffff;
+      --text-dark: #1a1a1a;
+      --bg-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      --bg-dark: linear-gradient(135deg, #1a1a1a, #2c2c2c, #3a3a3a);
+      --card-bg: rgba(255, 255, 255, 0.1);
+      --transition: all 0.3s ease;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-light);
+      min-height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+      transition: var(--transition);
+      line-height: 1.6;
+    }
+
+    /* Accessibility Modes */
+    body.dark-mode {
+      background: var(--bg-dark);
+      color: #e0e0e0;
+    }
+
+    body.high-contrast {
+      background: #000;
+      color: #fff;
+    }
+    
+    body.high-contrast * {
+      border-color: #fff !important;
+    }
+
+    body.high-contrast .card,
+    body.high-contrast .header,
+    body.high-contrast .nav-drawer {
+      background: #333;
+      border: 2px solid #fff !important;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 15px;
+      flex-grow: 1; /* Allows main content to grow and push footer down */
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      position: sticky;
+      top: 0;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text-light);
+      text-decoration: none;
+    }
+
+    /* Navigation */
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .hamburger:hover, 
+    .hamburger:focus {
+      color: var(--primary-color);
+      outline: 2px solid var(--primary-color);
+      background: rgba(122, 92, 244, 0.1);
+    }
+
+    nav {
+      display: flex;
+      gap: 20px;
+    }
+
+    nav a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 16px;
+      transition: var(--transition);
+      padding: 8px 12px;
+      border-radius: 5px;
+    }
+
+    nav a:hover, 
+    nav a:focus {
+      color: var(--primary-color);
+      outline: 2px solid var(--primary-color);
+      background: rgba(122, 92, 244, 0.1);
+    }
+
+    /* Mode Toggles */
+    .mode-toggles {
+      display: flex;
+      gap: 10px;
+    }
+
+    .mode-toggle {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 20px;
+      cursor: pointer;
+      transition: var(--transition);
+      padding: 8px;
+      border-radius: 5px;
+    }
+
+    .mode-toggle:hover, 
+    .mode-toggle:focus {
+      color: var(--primary-color);
+      outline: 2px solid var(--primary-color);
+      background: rgba(122, 92, 244, 0.1);
+    }
+
+    /* Mobile Navigation Drawer */
+    .nav-drawer {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      transition: left 0.3s ease;
+      z-index: 200;
+    }
+
+    .nav-drawer.active {
+      left: 0;
+    }
+
+    .nav-drawer a, 
+    .nav-drawer button {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 18px;
+      padding: 12px;
+      border-radius: 5px;
+      transition: var(--transition);
+      text-align: left;
+      background: none;
+      border: none;
+    }
+
+    .nav-drawer a:hover, 
+    .nav-drawer a:focus,
+    .nav-drawer button:hover, 
+    .nav-drawer button:focus {
+      background: rgba(122, 92, 244, 0.2);
+      outline: 2px solid var(--primary-color);
+    }
+
+    .nav-drawer .close-btn {
+      align-self: flex-end;
+      font-size: 24px;
+      background: none;
+      border: none;
+      color: var(--text-light);
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    /* Main Content Styling */
+    main {
+      padding: 40px 0;
+      text-align: center;
+    }
+
+    main h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      color: var(--primary-color);
+    }
+
+    .cart-items-container {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 20px;
+      margin-top: 30px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: left;
+    }
+
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+
+    .item-info {
+      flex-grow: 1;
+    }
+
+    .item-name {
+      font-weight: 600;
+      font-size: 1.1em;
+    }
+
+    .item-restaurant {
+      font-size: 0.9em;
+      opacity: 0.8;
+    }
+
+    .item-price {
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-left: 15px;
+    }
+
+    .remove-btn {
+      background: none;
+      border: none;
+      color: var(--error-color);
+      font-size: 1.2em;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: color 0.3s ease;
+    }
+
+    .remove-btn:hover {
+      color: #e53935;
+    }
+
+    .cart-summary {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.2em;
+      font-weight: 600;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      margin-top: 20px;
+    }
+
+    .cart-actions {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .btn {
+      background-color: var(--primary-color);
+      color: var(--text-light);
+      padding: 12px 25px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 600;
+      font-size: 1em;
+    }
+
+    .btn:hover, 
+    .btn:focus {
+      background-color: var(--primary-hover);
+      outline: 2px solid var(--primary-color);
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background-color: var(--error-color);
+    }
+
+    .btn-danger:hover,
+    .btn-danger:focus {
+      background-color: #e53935;
+    }
+
+    /* Custom Popup (reused from other pages) */
+    .custom-popup-overlay {
+      display: flex;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .custom-popup-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .custom-popup-content {
+      background: #2c5364;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      position: relative;
+      transform: translateY(-20px);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .custom-popup-overlay.show .custom-popup-content {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .custom-popup-close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 28px;
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    .custom-popup-close-btn:hover {
+      color: white;
+    }
+
+    .custom-popup-content p {
+      font-size: 18px;
+      margin: 10px 0 0;
+      color: white;
+    }
+
+    /* Footer Styles */
+    .footer {
+      background: rgba(0, 0, 0, 0.3);
+      color: var(--text-light);
+      padding: 40px 20px;
+      margin-top: 50px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+      text-align: center;
+      width: 100%;
+      box-sizing: border-box;
+      flex-shrink: 0;
+    }
+
+    .footer-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      max-width: 1200px;
+      margin: 0 auto;
+      gap: 30px;
+    }
+
+    .footer-section {
+      flex: 1;
+      min-width: 200px;
+      margin-bottom: 20px;
+    }
+
+    .footer-section h3 {
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      font-size: 1.2em;
+    }
+
+    .footer-section p {
+      font-size: 0.9em;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .footer-section ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .footer-section ul li {
+      margin-bottom: 10px;
+    }
+
+    .footer-section ul li a {
+      color: var(--text-light);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .footer-section ul li a:hover {
+      color: var(--primary-hover);
+    }
+
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .social-icons a {
+      color: var(--text-light);
+      font-size: 1.5em;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .social-icons a:hover {
+      background-color: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    .footer-bottom {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.85em;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .hamburger { display: block; }
+      nav, .mode-toggles { display: none; }
+      .footer-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      .footer-section {
+        text-align: center;
+        width: 100%;
+      }
+      .footer-section ul {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+      }
+      .footer-section ul li {
+        margin-bottom: 0;
+      }
+    }
+
+    @media (max-width: 480px) {
+      main h1 { font-size: 2em; }
+      .cart-item { flex-direction: column; align-items: flex-start; gap: 5px; }
+      .item-price, .remove-btn { margin-left: 0; width: 100%; text-align: right; }
+      .cart-actions { flex-direction: column; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="index.html" class="logo">ONETouch</a>
+      <button class="hamburger" aria-label="Toggle navigation menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <nav aria-label="Main navigation">
+        <a href="food-delivery.html">Food Delivery</a>
+        <a href="ride-booking.html">Ride Booking</a>
+        <a href="medical-services.html">Medical Services</a>
+        <a href="shopping.html">Shopping</a>
+        <a href="cart.html">Cart</a>
+        <a href="auth.html">Account</a>
+      </nav>
+    </header>
+
+    <div class="nav-drawer">
+      <button class="close-btn" aria-label="Close navigation menu">
+        <i class="fas fa-times"></i>
+      </button>
+      <a href="index.html" aria-label="Go to Home" onclick="closeNav()">Home</a>
+      <a href="food-delivery.html" aria-label="Go to Food Delivery" onclick="closeNav()">Food Delivery</a>
+      <a href="ride-booking.html" aria-label="Go to Ride Booking" onclick="closeNav()">Ride Booking</a>
+      <a href="medical-services.html" aria-label="Go to Medical Services" onclick="closeNav()">Medical Services</a>
+      <a href="shopping.html" aria-label="Go to Shopping" onclick="closeNav()">Shopping</a>
+      <a href="profile.html" aria-label="Go to Profile" onclick="closeNav()">Profile</a>
+      <button class="mode-toggle" aria-label="Toggle dark mode" onclick="toggleDarkMode(); closeNav()">
+        Dark Mode <i class="fas fa-moon"></i>
+      </button>
+      <button class="mode-toggle" aria-label="Toggle high contrast mode" onclick="toggleHighContrast(); closeNav()">
+        High Contrast <i class="fas fa-adjust"></i>
+      </button>
+    </div>
+
+    <main>
+      <h1>Your Shopping Cart</h1>
+      <div class="cart-items-container" id="cartItemsContainer">
+        <p>Your cart is empty.</p>
+      </div>
+      <div class="cart-summary">
+        <span>Total:</span>
+        <span id="cartTotal">₹0.00</span>
+      </div>
+      <div class="cart-actions">
+        <button class="btn-danger" onclick="clearCart()" aria-label="Clear all items from cart">Clear Cart</button>
+        <button class="btn" onclick="placeOrder()" aria-label="Proceed to checkout">Checkout</button>
+      </div>
+    </main>
+  </div>
+
+  <div id="customPopup" class="custom-popup-overlay">
+    <div class="custom-popup-content">
+      <span class="custom-popup-close-btn" aria-label="Close popup">&times;</span>
+      <p id="customPopupMessage"></p>
+      <div id="popupActions" style="margin-top: 20px;"></div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-container">
+        <div class="footer-section about">
+            <h3>About ONETouch</h3>
+            <p>Your ultimate unified urban services platform. Simplifying your daily life with food delivery, ride bookings, medical services, and shopping all in one place.</p>
+        </div>
+        <div class="footer-section links">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="food-delivery.html">Food Delivery</a></li>
+                <li><a href="ride-booking.html">Ride Booking</a></li>
+                <li><a href="medical-services.html">Medical Services</a></li>
+                <li><a href="shopping.html">Shopping</a></li>
+                <li><a href="auth.html">Account</a></li>
+            </ul>
+        </div>
+        <div class="footer-section contact">
+            <h3>Contact Us</h3>
+            <p>Email: support@onetouch.com</p>
+            <p>Phone: +91 98765 43210</p>
+            <p>Address: 123 Urban St, Metropolis, India</p>
+        </div>
+        <div class="footer-section social">
+            <h3>Follow Us</h3>
+            <div class="social-icons">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2025 ONETouch. All rights reserved.</p>
+    </div>
+</footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script>
+    // State Management
+    const state = {
+      cart: JSON.parse(localStorage.getItem('onetouchCart')) || [],
+      actionLogs: JSON.parse(localStorage.getItem('actionLogs')) || [], // For Merkle Tree
+    };
+
+    // DOM Elements
+    const customPopup = document.getElementById('customPopup');
+    const customPopupMessage = document.getElementById('customPopupMessage');
+    const popupActions = document.getElementById('popupActions');
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', async () => {
+      initNavigation();
+      initPopup();
+      updateCart(); // Ensure cart is updated on load
+      checkSavedModes();
+    });
+
+    // Navigation Functions
+    function initNavigation() {
+      const hamburger = document.querySelector('.hamburger');
+      const navDrawer = document.querySelector('.nav-drawer');
+      const closeBtn = document.querySelector('.nav-drawer .close-btn');
+
+      hamburger.addEventListener('click', openNav);
+      closeBtn.addEventListener('click', closeNav);
+
+      document.addEventListener('click', (e) => {
+        if (!navDrawer.contains(e.target) && e.target !== hamburger) {
+          closeNav();
+        }
+      });
+    }
+
+    function openNav() {
+      const navDrawer = document.querySelector('.nav-drawer');
+      navDrawer.classList.add('active');
+      gsap.to(navDrawer, { x: 0, duration: 0.3, ease: 'power2.out' });
+      logAction('Opened navigation menu');
+    }
+
+    function closeNav() {
+      const navDrawer = document.querySelector('.nav-drawer');
+      gsap.to(navDrawer, { x: -250, duration: 0.3, ease: 'power2.in', onComplete: () => navDrawer.classList.remove('active') });
+      logAction('Closed navigation menu');
+    }
+
+    // Mode Toggles
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      const icons = document.querySelectorAll('.mode-toggle i');
+      icons.forEach(icon => {
+        if (document.body.classList.contains('dark-mode')) {
+          icon.classList.replace('fa-sun', 'fa-moon');
+        } else {
+          icon.classList.replace('fa-moon', 'fa-sun');
+        }
+      });
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+      logAction('Toggled dark mode');
+    }
+
+    function toggleHighContrast() {
+      document.body.classList.toggle('high-contrast');
+      localStorage.setItem('highContrast', document.body.classList.contains('high-contrast'));
+      logAction('Toggled high contrast mode');
+    }
+
+    function checkSavedModes() {
+      if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+      }
+      if (localStorage.getItem('highContrast') === 'true') {
+        document.body.classList.add('high-contrast');
+      }
+    }
+
+    // Popup Functions
+    function initPopup() {
+      const closeButton = customPopup.querySelector('.custom-popup-close-btn');
+      closeButton.addEventListener('click', hideCustomPopup);
+      customPopup.addEventListener('click', (e) => {
+        if (e.target === customPopup) {
+          hideCustomPopup();
+        }
+      });
+    }
+
+    function showCustomPopup(message, actions = [], duration = 0) {
+      customPopupMessage.textContent = message;
+      popupActions.innerHTML = '';
+      actions.forEach(action => {
+        const button = document.createElement('button');
+        button.className = 'btn';
+        button.textContent = action.text;
+        button.onclick = () => {
+          action.handler();
+          hideCustomPopup();
+        };
+        popupActions.appendChild(button);
+      });
+      customPopup.classList.add('show');
+      if (duration > 0) {
+        setTimeout(hideCustomPopup, duration);
+      }
+      logAction('Showed custom popup');
+    }
+
+    function hideCustomPopup() {
+      customPopup.classList.remove('show');
+      logAction('Hid custom popup');
+    }
+
+    // Cart Functions
+    function updateCart() {
+      const cartItemsContainer = document.getElementById('cartItemsContainer');
+      const cartTotalSpan = document.getElementById('cartTotal');
+      let total = 0;
+
+      cartItemsContainer.innerHTML = '';
+      // Retrieve the entire unified cart from localStorage
+      const unifiedCart = JSON.parse(localStorage.getItem('onetouchCart')) || [];
+
+      if (unifiedCart.length === 0) {
+        cartItemsContainer.innerHTML = '<p style="text-align: center; opacity: 0.7;">Your cart is empty.</p>';
+        cartTotalSpan.textContent = '0.00';
+      } else {
+        unifiedCart.forEach(item => {
+          const cartItemDiv = document.createElement('div');
+          cartItemDiv.className = 'cart-item';
+          cartItemDiv.innerHTML = `
+            <div class="item-info">
+              <div class="item-name">${item.name} (x${item.quantity})</div>
+              ${item.type === 'food' ? `<div class="item-restaurant">${item.restaurant}</div>` : ''}
+              ${item.type === 'medicine' ? `<div class="item-type">Type: Medicine</div>` : ''}
+              ${item.type === 'shopping' ? `<div class="item-type">Type: Shopping</div>` : ''}
+            </div>
+            <div class="item-price">₹${(item.price * item.quantity).toFixed(2)}</div>
+            <button class="remove-btn" onclick="removeFromCart('${item.id}', '${item.type}')" aria-label="Remove ${item.name} from cart">
+              <i class="fas fa-trash"></i>
+            </button>
+          `;
+          cartItemsContainer.appendChild(cartItemDiv);
+          total += item.price * item.quantity;
+        });
+        // GSAP animation for cart items (optional, but good for visual feedback)
+        gsap.fromTo(cartItemsContainer.children, { opacity: 0, x: 20 }, { opacity: 1, x: 0, stagger: 0.05, duration: 0.3 });
+        cartTotalSpan.textContent = total.toFixed(2);
+      }
+      logAction('Updated unified cart display');
+    }
+
+    function removeFromCart(itemId, itemType) {
+      let cart = JSON.parse(localStorage.getItem('onetouchCart')) || [];
+      // Filter out the specific item by both ID and type
+      cart = cart.filter(item => !(item.id === itemId && item.type === itemType));
+      localStorage.setItem('onetouchCart', JSON.stringify(cart));
+      updateCart(); // Re-render the cart after removal
+      showCustomPopup('Item removed from cart.', [], 1500);
+      logAction(`Removed item ${itemId} of type ${itemType} from cart`);
+    }
+
+    function clearCart() {
+      localStorage.removeItem('onetouchCart'); // Clear the entire unified cart
+      updateCart(); // Re-render the cart (will show empty)
+      showCustomPopup('Your cart has been cleared!', [], 1500);
+      logAction('Cleared entire unified cart');
+    }
+
+    function placeOrder() {
+      const unifiedCart = JSON.parse(localStorage.getItem('onetouchCart')) || [];
+      if (unifiedCart.length === 0) {
+        showCustomPopup('Your cart is empty. Please add items before checking out.', [], 2000);
+        return;
+      }
+
+      // Here you would typically send the order to a backend or process it
+      // For this example, we'll just show a success message and clear the cart.
+      showCustomPopup('Order Placed Successfully!', [
+        { text: 'View Order History', handler: () => console.log('Navigate to Order History') },
+        { text: 'Continue Shopping', handler: () => {
+            hideCustomPopup();
+            // Optionally redirect to home or a specific shopping page
+            window.location.href = 'index.html';
+          }
+        }
+      ], 5000); // Show popup for 5 seconds
+
+      clearCart(); // Clear the cart after placing the order
+      logAction('Placed unified order');
+    }
+
+    // Merkle Tree for Action Logging (reused from other pages)
+    async function hashData(data) {
+      try {
+        const textEncoder = new TextEncoder();
+        const dataBuffer = textEncoder.encode(data);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hexHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return hexHash;
+      } catch (error) {
+        console.error('Hashing error:', error);
+        return '';
+      }
+    }
+    
+    async function buildMerkleTree(leaves) {
+      if (leaves.length === 0) return '';
+      
+      try {
+        let tempLeaves = [...leaves];
+        
+        while (tempLeaves.length > 1) {
+          const temp = [];
+          
+          for (let i = 0; i < tempLeaves.length; i += 2) {
+            const left = tempLeaves[i];
+            const right = i + 1 < tempLeaves.length ? tempLeaves[i + 1] : left;
+            const combined = await hashData(left + right);
+            temp.push(combined);
+          }
+          
+          tempLeaves = temp;
+        }
+        
+        return tempLeaves[0];
+      } catch (error) {
+        console.error('Merkle tree error:', error);
+        return '';
+      }
+    }
+    
+    async function logAction(action) {
+      try {
+        const timestamp = new Date().toISOString();
+        const logEntry = `${action} at ${timestamp}`;
+        const hash = await hashData(logEntry);
+        
+        state.actionLogs.push({ log: logEntry, hash });
+        localStorage.setItem('actionLogs', JSON.stringify(state.actionLogs));
+        
+        const merkleRoot = await buildMerkleTree(state.actionLogs.map(log => log.hash));
+        console.log('Action Logged:', { logEntry, hash, merkleRoot });
+      } catch (error) {
+        console.error('Logging error:', error);
+      }
+    }
+  </script>
+</body>
+</html>
